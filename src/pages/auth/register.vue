@@ -1,7 +1,7 @@
 <template>
     <div class="mb-5">
-        <Title>Login</Title>
-        <Subtitle>Login to your Plurali account</Subtitle>
+        <Title>Register</Title>
+        <Subtitle>Create a new Plurali account</Subtitle>
     </div>
 
     <form class="mb-4 w-full" @submit.prevent="submit">
@@ -24,12 +24,12 @@
         </div>
 
         <Button :disabled="loading" type="submit" class="w-full border border-violet-700 text-violet-700 mb-3.5 inline-flex justify-between items-center">
-            <p >Login</p>
+            <p>Register</p>
             <Spinner v-if="loading" class="!text-violet-700"/>
         </Button>
 
         <div class="inline-flex w-full justify-end items-center">
-            <router-link to="/auth/register" class="text-gray-500">Don't have an account yet?</router-link>
+            <router-link to="/auth/login" class="text-gray-500">Already registered?</router-link>
         </div>
     </form>
 </template>
@@ -41,11 +41,10 @@ import Title from "../../components/Title.vue";
 import Subtitle from "../../components/Subtitle.vue";
 import Button from "../../components/Button.vue";
 import Label from "../../components/Label.vue";
-import {login} from "../../api/auth";
-import {clearFlashes, flash, FlashType} from "../../store"
+import {register} from "../../api/auth";
 import InputError from "../../components/InputError.vue";
 import Spinner from "../../components/Spinner.vue";
-import {formatError, wrapRequest} from "../../api";
+import {wrapRequest} from "../../api";
 
 export default defineComponent({
     components: {
@@ -87,11 +86,11 @@ export default defineComponent({
             if (loading.value) return;
             loading.value = true
 
-            const ok = await wrapRequest(() => login(form))
+            const ok = await wrapRequest(() => register(form))
             loading.value = false
 
             if (ok) {
-                await router.push("/dashboard")
+                await router.push("/")
             }
         }
 

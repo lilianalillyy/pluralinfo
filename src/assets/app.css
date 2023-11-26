@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg-main {
-    background-image: url(./img/background.svg);
+#plurali > #visual > path {
+    @apply transition;
 }

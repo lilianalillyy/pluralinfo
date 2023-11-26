@@ -1,5 +1,5 @@
 import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
-import { error, user } from "./store";
+import {flash, flashes, FlashType, user} from "./store";
 import { getUser } from "./api/user";
 
 const routes: RouteRecordRaw[] = [
@@ -16,12 +16,32 @@ const routes: RouteRecordRaw[] = [
                 component: () => import("./pages/auth/login.vue")
             },
             {
-                path: "/admin",
-                component: () => import("./pages/admin/index.vue")
+                path: "/auth/register",
+                component: () => import("./pages/auth/register.vue")
             },
             {
-                path: "/admin/user",
-                component: () => import("./pages/admin/user.vue")
+                path: "/dashboard",
+                component: () => import("./pages/dashboard/index.vue")
+            },
+            {
+                path: "/dashboard/user",
+                component: () => import("./pages/dashboard/user.vue")
+            },
+            {
+                path: "/dashboard/system",
+                component: () => import("./pages/dashboard/system.vue")
+            },
+            {
+                path: "/dashboard/member/:id",
+                component: () => import("./pages/dashboard/member.vue")
+            },
+            {
+                path: "/:systemId",
+                component: () => import("./pages/system.vue")
+            },
+            {
+                path: "/:systemId/:memberId",
+                component: () => import("./pages/member.vue")
             }
         ]
     }
@@ -33,6 +53,8 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+    flashes.value = [];
+
     try {
         const data = (await getUser()).data;
         if (!data.success) throw new Error();
@@ -43,18 +65,18 @@ router.beforeEach(async (to) => {
     }
 
     if (to.path.startsWith("/auth") && !!user.value) {
-        return router.push("/admin");
+        return router.push("/dashboard");
     }
 
-    if (to.path.startsWith("/admin")) {
+    if (to.path.startsWith("/dashboard")) {
         if (!user.value) {
             return router.push("/auth/login")
         }
 
         if (!user.value.pluralKey) {
-            error.value = "You must setup your Simply Plural API key!"
-            if (to.path !== "/admin/user") {
-                router.push("/admin/user")
+            flash("You must setup your Simply Plural API key!", FlashType.Danger)
+            if (to.path !== "/dashboard/user") {
+                router.push("/dashboard/user")
             }
             return;
         }
